@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: product-order-management
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+    database-platform: org.hibernate.dialect.H2Dialect
+  datasource:
+    url: jdbc:h2:file:~/mg-db;AUTO_SERVER=TRUE
+    driver-class-name: org.h2.Driver
+server:
+  servlet:
+    context-path: /api/v1
+
