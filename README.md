@@ -11,12 +11,12 @@ Build
 -----
 - Clone the project to your local environment
 
-Option 1
+Option 1 (Mysql will be installed and used)
 - Make sure docker is running
 - Run "docker-compose up" command in the project directory
-* Docker image can be pulled from my repo - `docker pull dogukanzengin/default:latest`
+- Docker image can also be pulled from my repo - `docker pull dogukanzengin/default:latest`
 
-Option 2
+Option 2 (H2 Embedded DB is used)
 - In the project directory run `/mvnw spring-boot:run`
 
 Usage
