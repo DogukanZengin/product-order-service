@@ -18,3 +18,10 @@ server:
   servlet:
     context-path: /api/v1
 
+api:
+  docs:
+    products:
+      retrieve : Retrieve all products
+      create : Create a product
+      update: Update a product with the specified key
+
