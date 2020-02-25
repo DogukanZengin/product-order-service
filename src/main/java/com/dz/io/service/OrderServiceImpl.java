@@ -31,7 +31,7 @@ public class OrderServiceImpl implements OrderService
     public SalesOrder placeOrder(SalesOrder order) throws ProductNotFoundException {
         for(OrderItem item: order.getOrderItems()){
             Optional<Product> product = productRepository.findById(item.getProduct().getProductId());
-            if(product.isEmpty()){
+            if(!product.isPresent()){
                 throw new ProductNotFoundException("Product not found with id : " + item.getProduct().getProductId());
             }
             item.setPrice(product.get().getPrice());
