@@ -29,6 +29,7 @@ Usage
         __Download__ : https://www.postman.com
 - DB Console can be accessed via http://localhost:8080/api/v1/h2-console/login.jsp
     .No password required, JDBC Url is `jdbc:h2:file:~/mg-db` (Only for Option 2)
+- Data store will contain 3 Product populated upfront
         
 Ideas for Authentication
 ------------------------
