@@ -14,6 +14,7 @@ Build
 Option 1
 - Make sure docker is running
 - Run "docker-compose up" command in the project directory
+* Docker image can be pulled from my repo - `docker pull dogukanzengin/default:latest`
 
 Option 2
 - In the project directory run `/mvnw spring-boot:run`
