@@ -14,6 +14,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 public class ProductServiceImplTest {
 
@@ -39,12 +40,13 @@ public class ProductServiceImplTest {
         List<Product> products =  new ArrayList<>();
         products.add(product);
 
-        given(productServiceImpl.getAllProducts()).willReturn(products);
+        given(productRepository.findAll()).willReturn(products);
 
-        List<Product> response = productRepository.findAll();
+        List<Product> response = productServiceImpl.getAllProducts();
 
         assertThat(response).hasSize(1);
         assertThat(response).containsExactly(product);
+        verify(productRepository).save(product);
     }
 
     @Test
@@ -52,16 +54,21 @@ public class ProductServiceImplTest {
         given(productRepository.save(product)).willReturn(product);
 
         Product response = productServiceImpl.createProduct(product);
+
         assertThat(response).isNotNull();
         assertThat(response.getProductId()).isNotNull();
+        verify(productRepository).save(product);
     }
 
     @Test
     public void whenUpdateProductThenSuccess(){
         product.setPrice(new BigDecimal("6.0"));
+
         given(productRepository.save(product)).willReturn(product);
         Product response = productServiceImpl.updateProduct(product,1L);
+
         assertThat(response.getPrice()).isEqualTo(new BigDecimal("6.0"));
+        verify(productRepository).save(product);
     }
 
 }
