@@ -17,7 +17,7 @@ Option 1 (Mysql will be installed and used)
 - Docker image can also be pulled from my repo - `docker pull dogukanzengin/default:latest`
 
 Option 2 (H2 Embedded DB is used)
-- In the project directory run `/mvnw spring-boot:run`
+- In the project directory run `./mvnw spring-boot:run`
 
 Usage
 ---------------
