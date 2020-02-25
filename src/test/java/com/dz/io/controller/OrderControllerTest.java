@@ -3,7 +3,9 @@ package com.dz.io.controller;
 import com.dz.io.domain.OrderItem;
 import com.dz.io.domain.Product;
 import com.dz.io.domain.SalesOrder;
+import com.dz.io.dto.OrderItemDto;
 import com.dz.io.dto.SalesOrderDto;
+import com.dz.io.exception.ProductNotFoundException;
 import com.dz.io.service.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
@@ -47,16 +49,17 @@ public class OrderControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    private JacksonTester<SalesOrder> json;
+    private JacksonTester<SalesOrderDto> json;
     private JacksonTester<List<SalesOrder>> jsonList;
 
-    private SalesOrder order;
+    private SalesOrderDto order;
+
 
     @Before
     public void setUp(){
         JacksonTester.initFields(this, new ObjectMapper());
-        order =  new SalesOrder();
-        order.setOrderId(1L);
+        order =  new SalesOrderDto();
+        order.setId(1L);
         order.setEmail("demo@demo.com");
         order.setCreationDate(LocalDateTime.now());
 
@@ -64,8 +67,8 @@ public class OrderControllerTest {
         product.setProductId(1L);
         product.setName("DEMO");
         product.setPrice(new BigDecimal("5.0"));
-        OrderItem orderItem = new OrderItem();
-        orderItem.setProduct(product);
+        OrderItemDto orderItem = new OrderItemDto();
+        orderItem.setProductId(1L);
         order.setOrderItems(new ArrayList<>());
         order.getOrderItems().add(orderItem);
     }
@@ -103,25 +106,22 @@ public class OrderControllerTest {
 
     @Test
     public void whenPlaceOrderThenSuccess() throws Exception {
-        MockHttpServletResponse response = mvc.perform(post("/orders")
-                .content(json.write(order).getJson())
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value("Success"))
-                .andReturn().getResponse();
+        String orderJson = "{\"email\":\"demo@demo.com\",\"orderItems\":[{\"productId\":1}]}";
+        SalesOrder salesOrder =  new SalesOrder();
+        salesOrder.setOrderId(1L);
+        given(orderService.placeOrder(modelMapper.map(order,SalesOrder.class))).willReturn(salesOrder);
+        MockHttpServletResponse response = mvc.perform(post("/orders").contentType(MediaType.APPLICATION_JSON)
+                .content(orderJson)).andReturn().getResponse();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        verify(orderService).placeOrder(order);
     }
 
     @Test
     public void whenOrderWithNonExistingProductThenError() throws Exception{
-        order.getOrderItems().get(0).getProduct().setProductId(1111L);
-
+        String orderJson = "{\"email\":\"demo@demo.com\",\"orderItems\":[{\"productId\":11111}]}";
+        given(orderService.placeOrder(modelMapper.map(order,SalesOrder.class))).willThrow(ProductNotFoundException.class);
         MockHttpServletResponse response = mvc.perform(post("/orders")
-                .content(json.write(order).getJson())
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value("Product not found with id : 1111"))
-                .andReturn().getResponse();
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        verify(orderService).placeOrder(order);
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(orderJson)).andReturn().getResponse();
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 }

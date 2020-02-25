@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -46,7 +47,7 @@ public class ProductServiceImplTest {
 
         assertThat(response).hasSize(1);
         assertThat(response).containsExactly(product);
-        verify(productRepository).save(product);
+        verify(productRepository).findAll();
     }
 
     @Test
@@ -63,7 +64,7 @@ public class ProductServiceImplTest {
     @Test
     public void whenUpdateProductThenSuccess(){
         product.setPrice(new BigDecimal("6.0"));
-
+        given(productRepository.findById(1L)).willReturn(Optional.of(product));
         given(productRepository.save(product)).willReturn(product);
         Product response = productServiceImpl.updateProduct(product,1L);
 

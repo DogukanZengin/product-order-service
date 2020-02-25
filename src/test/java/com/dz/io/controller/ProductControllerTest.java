@@ -1,12 +1,13 @@
 package com.dz.io.controller;
 
 import com.dz.io.domain.Product;
+import com.dz.io.domain.SalesOrder;
+import com.dz.io.dto.ProductDto;
+import com.dz.io.exception.ProductNotFoundException;
 import com.dz.io.service.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,18 +44,24 @@ public class ProductControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    private JacksonTester<Product> json;
+    private JacksonTester<ProductDto> json;
     private JacksonTester<List<Product>> jsonList;
 
-    private Product product;
+    private ProductDto product;
+    private Product entity;
 
     @Before
     public void setUp(){
         JacksonTester.initFields(this, new ObjectMapper());
-        product =  new Product();
+        product =  new ProductDto();
         product.setProductId(1L);
         product.setPrice(new BigDecimal("5.0"));
         product.setName("DEMO");
+
+        entity =  new Product();
+        entity.setProductId(1L);
+        entity.setPrice(new BigDecimal("5.0"));
+        entity.setName("DEMO");
     }
 
     @Test
@@ -78,19 +85,18 @@ public class ProductControllerTest {
 
     @Test
     public void whenCreateProductThenSuccess() throws Exception {
-        given(productService.createProduct(product)).willReturn(product);
+        given(productService.createProduct(entity)).willReturn(entity);
 
         MockHttpServletResponse response = mvc.perform(post("/products").contentType(MediaType.APPLICATION_JSON)
                 .content(json.write(product).getJson())).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        verify(productService).createProduct(product);
     }
 
     @Test
     public void whenCreateProductWithoutNameThenError() throws Exception {
         product.setName(null);
-        given(productService.createProduct(product)).willReturn(product);
+        given(productService.createProduct(entity)).willReturn(entity);
 
         MockHttpServletResponse response = mvc.perform(post("/products").contentType(MediaType.APPLICATION_JSON)
                 .content(json.write(product).getJson())).andReturn().getResponse();
@@ -101,7 +107,7 @@ public class ProductControllerTest {
     @Test
     public void whenUpdateProductThenSuccess() throws Exception {
         product.setName("UPDATED_DEMO");
-        given(productService.updateProduct(product,1L)).willReturn(product);
+        given(productService.updateProduct(entity,1L)).willReturn(entity);
 
         MockHttpServletResponse response = mvc.perform(put("/products/1").contentType(MediaType.APPLICATION_JSON)
                 .content(json.write(product).getJson())).andReturn().getResponse();
@@ -111,9 +117,11 @@ public class ProductControllerTest {
 
     @Test
     public void whenUpdateNonExistingProductThanError() throws Exception {
-        MockHttpServletResponse response = mvc.perform(put("/products/111").contentType(MediaType.APPLICATION_JSON)
+        product.setProductId(null);
+        given(productService.updateProduct(modelMapper.map(product, Product.class),1111L)).willThrow(ProductNotFoundException.class);
+        MockHttpServletResponse response = mvc.perform(put("/products/1111").contentType(MediaType.APPLICATION_JSON)
                 .content(json.write(product).getJson())).andReturn().getResponse();
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
 }

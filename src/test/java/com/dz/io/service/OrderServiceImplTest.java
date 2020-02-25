@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -62,7 +63,7 @@ public class OrderServiceImplTest {
     @Test
     public void whenPlaceOrderThenSuccess(){
         given(orderRepository.save(order)).willReturn(order);
-
+        given(productRepository.findById(1L)).willReturn(Optional.of(order.getOrderItems().get(0).getProduct()));
         SalesOrder response = orderService.placeOrder(order);
 
         assertThat(response).isEqualTo(order);
