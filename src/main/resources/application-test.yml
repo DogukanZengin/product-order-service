@@ -1,0 +1,13 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        show_sql: true
+        dialect: org.hibernate.dialect.MySQL5Dialect
+    database-platform: org.hibernate.dialect.H2Dialect
+  datasource:
+    url: jdbc:mariadb://product-db:3306/commerce?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false
+    driver-class-name: org.mariadb.jdbc.Driver
+
