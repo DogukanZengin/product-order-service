@@ -11,11 +11,11 @@ Build
 -----
 - Clone the project to your local environment
 
-######Option 1
+Option 1
 - Make sure docker is running
 - Run "docker-compose up" command in the project directory
 
-######Option 2
+Option 2
 - In the project directory run `/mvnw spring-boot:run`
 
 Usage
