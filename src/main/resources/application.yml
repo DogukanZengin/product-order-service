@@ -24,4 +24,7 @@ api:
       retrieve : Retrieve all products
       create : Create a product
       update: Update a product with the specified key
+    orders:
+      place: Place an order
+      retrieve: Retrieve orders within the specified date range
 
